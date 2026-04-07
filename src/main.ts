@@ -26,6 +26,11 @@ export default class FlashcardPlugin extends Plugin {
       (leaf) => new FlashcardsSidebarView(leaf, this)
     );
 
+    this.registerHoverLinkSource(VIEW_TYPE_FLASHCARDS_SIDEBAR, {
+      display: "Glossa Flashcards Sidebar",
+      defaultMod: false,
+    });
+
     this.addCommand({
       id: "open-flashcards-sidebar",
       name: "Open flashcards sidebar",
@@ -262,7 +267,6 @@ export default class FlashcardPlugin extends Plugin {
     new PracticeSetupModal(
       this.app,
       cards,
-      this.settings.folder,
       filterKeys,
       this.settings.practiceCardFront,
       this.settings.practiceCardBack

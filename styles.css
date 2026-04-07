@@ -196,3 +196,32 @@
   font-size: 1.2em;
   margin: 16px 0;
 }
+
+/* Sidebar cards */
+.glossa-sidebar-card {
+  padding: 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background-color: var(--background-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.glossa-sidebar-card:hover {
+  background-color: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+}
+
+.glossa-sidebar-card-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: var(--text-normal);
+}
+
+.glossa-sidebar-card-translation {
+  color: var(--text-muted);
+  font-size: 0.9em;
+}

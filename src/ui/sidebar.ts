@@ -3,11 +3,13 @@ import type { WorkspaceLeaf, TFile } from "obsidian";
 import type FlashcardPlugin from "../main";
 import { loadFlashcardNotes } from "../utils/file";
 import type { FlashcardData } from "../types";
+import { PracticeSetupModal } from "./practice";
 
 export const VIEW_TYPE_FLASHCARDS_SIDEBAR = "glossa-flashcard-sidebar";
 
 export class FlashcardsSidebarView extends ItemView {
   plugin: FlashcardPlugin;
+  private lastActiveFile: TFile | null = null;
 
   constructor(leaf: WorkspaceLeaf, plugin: FlashcardPlugin) {
     super(leaf);
@@ -29,6 +31,8 @@ export class FlashcardsSidebarView extends ItemView {
   async onOpen() {
     this.registerEvent(
       this.app.workspace.on("active-leaf-change", () => {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (activeFile === this.lastActiveFile) return;
         this.updateView();
       })
     );
@@ -52,6 +56,7 @@ export class FlashcardsSidebarView extends ItemView {
     container.addClass("glossa-sidebar-container");
 
     const activeFile = this.app.workspace.getActiveFile();
+    this.lastActiveFile = activeFile;
     if (!activeFile) {
       container.createEl("p", {
         text: "No active file.",
@@ -71,10 +76,33 @@ export class FlashcardsSidebarView extends ItemView {
       return;
     }
 
-    container.createEl("h4", {
-      text: `Flashcards (${cards.length})`,
+    const header = container.createDiv({
       cls: "glossa-sidebar-header",
-      attr: { style: "margin-top: 0; margin-bottom: 20px; font-weight: 600;" }
+      attr: { style: "display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;" }
+    });
+
+    header.createEl("h4", {
+      text: `Flashcards (${cards.length})`,
+      attr: { style: "margin: 0; font-weight: 600;" }
+    });
+
+    const practiceBtn = header.createEl("button", {
+      cls: "glossa-sidebar-practice-btn mod-cta",
+      attr: { style: "cursor: pointer; padding: 4px 10px; font-size: 0.85em; border-radius: 4px;", "aria-label": "Practice these flashcards" }
+    });
+    practiceBtn.setText("Practice");
+    practiceBtn.addEventListener("click", () => {
+      const filterKeys = this.plugin.settings.practiceFilters
+        .split(",")
+        .map((s: string) => s.trim())
+        .filter((s: string) => s.length > 0);
+      new PracticeSetupModal(
+        this.app,
+        cards,
+        filterKeys,
+        this.plugin.settings.practiceCardFront,
+        this.plugin.settings.practiceCardBack
+      ).open();
     });
 
     const list = container.createDiv({
@@ -83,17 +111,25 @@ export class FlashcardsSidebarView extends ItemView {
     });
 
     for (const card of cards) {
-      const cardEl = list.createDiv({
-        cls: "glossa-sidebar-card",
-        attr: { 
-          style: "padding: 12px; border: 1px solid var(--background-modifier-border); border-radius: 6px; background-color: var(--background-secondary); display: flex; flex-direction: column; gap: 4px;"
-        }
+      const cardEl = list.createDiv({ cls: "glossa-sidebar-card" });
+      cardEl.addEventListener("mouseover", (event) => {
+        this.app.workspace.trigger("hover-link", {
+          event,
+          source: VIEW_TYPE_FLASHCARDS_SIDEBAR,
+          hoverParent: this,
+          targetEl: cardEl,
+          linktext: card.file.basename,
+          sourcePath: card.file.path,
+        });
       });
 
-      cardEl.createDiv({
+      cardEl.addEventListener("click", () => {
+        this.app.workspace.openLinkText(card.file.basename, card.file.path, "tab");
+      });
+
+      cardEl.createEl("span", {
         text: card.word,
         cls: "glossa-sidebar-card-title",
-        attr: { style: "font-weight: bold; font-size: 1.1em; color: var(--text-normal);" }
       });
 
       const translation = card.frontmatter["translation"] || "";
@@ -101,7 +137,6 @@ export class FlashcardsSidebarView extends ItemView {
       cardEl.createDiv({
         text: translation,
         cls: "glossa-sidebar-card-translation",
-        attr: { style: "color: var(--text-muted); font-size: 0.9em;" }
       });
     }
   }

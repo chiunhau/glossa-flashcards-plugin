@@ -1,33 +1,5 @@
-import { App, FuzzySuggestModal, Modal, Notice, Setting, TFile, normalizePath } from "obsidian";
+import { App, Modal, Notice, Setting, TFile } from "obsidian";
 import { FlashcardData } from "../types";
-
-class NoteSuggestModal extends FuzzySuggestModal<TFile> {
-  private onChoose: (file: TFile) => void;
-  private excludePrefix: string | null;
-
-  constructor(app: App, flashcardFolder: string, onChoose: (file: TFile) => void) {
-    super(app);
-    this.onChoose = onChoose;
-    this.excludePrefix = flashcardFolder.trim()
-      ? normalizePath(flashcardFolder.trim()) + "/"
-      : null;
-    this.setPlaceholder("Select a note to filter by its flashcard links…");
-  }
-
-  getItems(): TFile[] {
-    return this.app.vault.getMarkdownFiles().filter((f) =>
-      this.excludePrefix ? !f.path.startsWith(this.excludePrefix) : true
-    );
-  }
-
-  getItemText(file: TFile): string {
-    return file.basename;
-  }
-
-  onChooseItem(file: TFile): void {
-    this.onChoose(file);
-  }
-}
 
 function renderTemplate(template: string, card: FlashcardData): string {
   return template
@@ -37,27 +9,22 @@ function renderTemplate(template: string, card: FlashcardData): string {
 
 export class PracticeSetupModal extends Modal {
   private allCards: FlashcardData[];
-  private flashcardFolder: string;
   private filterKeys: string[];
   private cardFront: string;
   private cardBack: string;
   private selectedFilters: Map<string, Set<string>>;
   private cardCount: number | "all";
   private order: "random" | "alphabetical";
-  private selectedNote: TFile | null = null;
-  private noteFilterEl: HTMLElement | null = null;
 
   constructor(
     app: App,
     cards: FlashcardData[],
-    flashcardFolder: string,
     filterKeys: string[],
     cardFront: string,
     cardBack: string
   ) {
     super(app);
     this.allCards = cards;
-    this.flashcardFolder = flashcardFolder;
     this.filterKeys = filterKeys;
     this.cardFront = cardFront;
     this.cardBack = cardBack;
@@ -127,34 +94,6 @@ export class PracticeSetupModal extends Modal {
         });
       });
 
-    const noteFilterSetting = new Setting(contentEl)
-      .setName("Filter by note")
-      .setDesc("Practice only flashcards linked from a specific note")
-      .addButton((btn) => {
-        btn.setButtonText("Select note").onClick(() => {
-          new NoteSuggestModal(this.app, this.flashcardFolder, (file) => {
-            this.selectedNote = file;
-            if (this.noteFilterEl) {
-              this.noteFilterEl.setText(file.basename);
-              this.noteFilterEl.style.display = "inline";
-            }
-          }).open();
-        });
-      })
-      .addButton((btn) => {
-        btn.setButtonText("Clear").onClick(() => {
-          this.selectedNote = null;
-          if (this.noteFilterEl) {
-            this.noteFilterEl.style.display = "none";
-          }
-        });
-      });
-
-    this.noteFilterEl = noteFilterSetting.controlEl.createEl("span", {
-      cls: "practice-note-filter-name",
-    });
-    this.noteFilterEl.style.display = "none";
-
     const btnContainer = contentEl.createDiv({ cls: "modal-button-container" });
     btnContainer.createEl("button", { text: "Start", cls: "mod-cta" })
       .addEventListener("click", () => this.startPractice());
@@ -168,17 +107,6 @@ export class PracticeSetupModal extends Modal {
       }
       return true;
     });
-
-    if (this.selectedNote) {
-      const resolvedLinks =
-        this.app.metadataCache.resolvedLinks[this.selectedNote.path] ?? {};
-      const linkedPaths = new Set(Object.keys(resolvedLinks));
-      cards = cards.filter((card) => linkedPaths.has(card.file.path));
-      if (cards.length === 0) {
-        new Notice(`No flashcard links found in "${this.selectedNote.basename}".`);
-        return;
-      }
-    }
 
     if (cards.length === 0) {
       new Notice("No cards match the selected filters.");
