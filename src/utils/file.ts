@@ -24,7 +24,8 @@ function fmValueToString(val: unknown): string {
   if (val === null || val === undefined) return "";
   if (Array.isArray(val)) return val.map((v) => fmValueToString(v)).join(", ");
   if (typeof val === "object") return JSON.stringify(val);
-  return String(val);
+  if (typeof val === "string" || typeof val === "number" || typeof val === "boolean") return String(val);
+  return "";
 }
 
 export function loadFlashcardNotes(app: App, folderPath: string): FlashcardData[] {
