@@ -1,8 +1,10 @@
 # Glossa Flashcards
 
-[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/chiunhau)
+<a href="https://buymeacoffee.com/chiunhau"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="140"></a>
 
 Turn any text into living vocabulary — an Obsidian plugin that uses AI to generate rich flashcards from selected text, plus a browser extension to capture words from any webpage.
+
+<video src="demo.mp4" controls width="100%"></video>
 
 ## Features
 
