@@ -23,7 +23,14 @@ Practice your flashcards with a simple card-flip interface. Filter by any proper
 ### Fully Customisable
 Every part of the pipeline is configurable: the AI prompt, output fields, note body template, frontmatter properties, card front/back templates, and practice filters. The defaults are set up for vocabulary learning (Finnish, but any language works).
 
----
+
+## Privacy & Network Access
+
+This plugin makes network requests to the following external service:
+
+- **Google Gemini API** (`generativelanguage.googleapis.com`) — used to generate flashcard content from your selected text. Requests are sent only when you explicitly trigger flashcard generation. Your Google AI Studio API key is stored locally and never shared.
+
+No other data is collected or transmitted.
 
 ## Installation
 

@@ -2,7 +2,8 @@ import { type App, Notice, normalizePath, requestUrl } from "obsidian";
 import type { PluginSettings } from "../types";
 import { ensureFolderExists, sanitizeFilename } from "../utils/file";
 
-export const PRO_API_BASE = "https://glossaflashcards.vercel.app";
+// Pro (hidden — not yet released)
+// export const PRO_API_BASE = "https://glossaflashcards.vercel.app";
 
 interface OutputField {
 	key: string;
@@ -129,42 +130,43 @@ async function callDirectGemini(
 	return JSON.parse(text) as Record<string, string>;
 }
 
-async function callProProxy(
-	settings: PluginSettings,
-	sourceText: string,
-): Promise<Record<string, string>> {
-	const response = await requestUrl({
-		url: `${PRO_API_BASE}/api/generate`,
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({
-			licenseKey: settings.licenseKey,
-			sourceText: sourceText.trim(),
-			prompt: settings.customPrompt,
-			outputFields: settings.outputFields,
-			language: settings.language,
-			model: settings.geminiModel,
-		}),
-		throw: false,
-	});
-
-	if (response.status === 429) {
-		throw new Error(
-			response.json?.error ??
-				"Weekly card limit reached. Upgrade or wait until next week.",
-		);
-	}
-	if (response.status === 401) {
-		throw new Error("Invalid or expired license key. Check Settings → Pro.");
-	}
-	if (response.status !== 200) {
-		throw new Error(
-			response.json?.error ?? `Server error (${response.status})`,
-		);
-	}
-
-	return response.json.output as Record<string, string>;
-}
+// Pro (hidden — not yet released)
+// async function callProProxy(
+// 	settings: PluginSettings,
+// 	sourceText: string,
+// ): Promise<Record<string, string>> {
+// 	const response = await requestUrl({
+// 		url: `${PRO_API_BASE}/api/generate`,
+// 		method: "POST",
+// 		headers: { "Content-Type": "application/json" },
+// 		body: JSON.stringify({
+// 			licenseKey: settings.licenseKey,
+// 			sourceText: sourceText.trim(),
+// 			prompt: settings.customPrompt,
+// 			outputFields: settings.outputFields,
+// 			language: settings.language,
+// 			model: settings.geminiModel,
+// 		}),
+// 		throw: false,
+// 	});
+//
+// 	if (response.status === 429) {
+// 		throw new Error(
+// 			response.json?.error ??
+// 				"Weekly card limit reached. Upgrade or wait until next week.",
+// 		);
+// 	}
+// 	if (response.status === 401) {
+// 		throw new Error("Invalid or expired license key. Check Settings → Pro.");
+// 	}
+// 	if (response.status !== 200) {
+// 		throw new Error(
+// 			response.json?.error ?? `Server error (${response.status})`,
+// 		);
+// 	}
+//
+// 	return response.json.output as Record<string, string>;
+// }
 
 async function createNote(
 	app: App,
@@ -233,9 +235,7 @@ export async function generateFlashcard(
 	const loadingNotice = new Notice("Generating flashcard…", 0);
 
 	try {
-		const flashcard = settings.licenseKey
-			? await callProProxy(settings, sourceText)
-			: await callDirectGemini(settings, sourceText);
+		const flashcard = await callDirectGemini(settings, sourceText);
 
 		loadingNotice.hide();
 		return await createNote(app, settings, flashcard, sourceText);

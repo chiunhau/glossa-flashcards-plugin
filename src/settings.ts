@@ -1,7 +1,6 @@
-import { App, PluginSettingTab, Setting, requestUrl } from "obsidian";
+import { App, PluginSettingTab, Setting } from "obsidian";
 import type FlashcardPlugin from "./main";
-import { PluginSettings, ProStats } from "./types";
-import { PRO_API_BASE } from "./api/generate";
+import { PluginSettings } from "./types";
 
 export const DEFAULT_PROMPT = `You are a {{language}} language expert.
 Extract the word or short phrase from the following text and generate a flashcard for it.
@@ -40,7 +39,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   practiceCardFront: DEFAULT_CARD_FRONT,
   practiceCardBack: DEFAULT_CARD_BACK,
   practiceFilters: "word_class, group",
-  licenseKey: "",
+  // licenseKey: "",  // Pro — not yet released
 };
 
 export class FlashcardSettingTab extends PluginSettingTab {
@@ -51,78 +50,9 @@ export class FlashcardSettingTab extends PluginSettingTab {
     this.plugin = plugin;
   }
 
-  private async fetchProStats(el: HTMLElement): Promise<void> {
-    try {
-      const response = await requestUrl({
-        url: `${PRO_API_BASE}/api/stats`,
-        method: "GET",
-        headers: {
-          "x-license-key": this.plugin.settings.licenseKey,
-        },
-      });
-      const stats: ProStats = response.json;
-      el.empty();
-      el.createEl("strong", { text: "Glossa Pro" });
-      el.createEl("br");
-      el.createSpan({ text: `Cards this week: ${stats.cardsThisWeek} / ${stats.weeklyLimit}` });
-      el.createEl("br");
-      el.createSpan({ text: `Cards all time: ${stats.cardsTotal}` });
-      el.createEl("br");
-      el.createSpan({
-        text: `Status: ${stats.status}`,
-        cls: stats.status === "active" ? "mod-success" : "mod-warning",
-      });
-    } catch {
-      el.setText("Could not load stats. Check your license key or internet connection.");
-    }
-  }
-
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-
-    // ── Pro ───────────────────────────────────────────────────────────────────
-
-    containerEl.createEl("h2", { text: "Pro" });
-
-    new Setting(containerEl)
-      .setName("License key")
-      .setDesc("Glossa Pro license key. When set, no Gemini API key is needed.")
-      .addText((text) =>
-        text
-          .setPlaceholder("XXXX-XXXX-XXXX-XXXX")
-          .setValue(this.plugin.settings.licenseKey)
-          .then((t) => {
-            t.inputEl.type = "password";
-            t.inputEl.style.width = "300px";
-          })
-          .onChange(async (value) => {
-            this.plugin.settings.licenseKey = value.trim();
-            await this.plugin.saveSettings();
-          })
-      );
-
-    if (!this.plugin.settings.licenseKey) {
-      const upgradeEl = containerEl.createDiv();
-      upgradeEl.style.marginBottom = "16px";
-      upgradeEl.style.fontSize = "0.9em";
-      upgradeEl.createSpan({ text: "No API key required, 150 cards/week, usage stats. " });
-      const link = upgradeEl.createEl("a", { text: "Get Glossa Pro →" });
-      link.href = "https://glossaflashcards.vercel.app/#pricing";
-      link.style.fontWeight = "600";
-    }
-
-    if (this.plugin.settings.licenseKey) {
-      const statsEl = containerEl.createDiv({ cls: "glossa-pro-stats" });
-      statsEl.style.padding = "12px 16px";
-      statsEl.style.background = "var(--background-secondary)";
-      statsEl.style.borderRadius = "6px";
-      statsEl.style.marginBottom = "16px";
-      statsEl.style.fontSize = "0.9em";
-      statsEl.setText("Loading stats…");
-
-      this.fetchProStats(statsEl);
-    }
 
     // ── General ───────────────────────────────────────────────────────────────
 

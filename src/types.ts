@@ -16,16 +16,17 @@ export interface PluginSettings {
   practiceCardFront: string;
   practiceCardBack: string;
   practiceFilters: string;
-  // Pro
-  licenseKey: string;
+  // Pro (hidden — not yet released)
+  // licenseKey: string;
 }
 
-export interface ProStats {
-  cardsThisWeek: number;
-  cardsTotal: number;
-  weeklyLimit: number;
-  status: "active" | "expired" | "invalid";
-}
+// Pro (hidden — not yet released)
+// export interface ProStats {
+//   cardsThisWeek: number;
+//   cardsTotal: number;
+//   weeklyLimit: number;
+//   status: "active" | "expired" | "invalid";
+// }
 
 export interface FlashcardData {
   file: TFile;
