@@ -195,9 +195,9 @@ async function createNote(
 
 	const existingFile = app.vault.getAbstractFileByPath(filePath);
 
-	if (existingFile) {
+	if (existingFile instanceof TFile) {
 		const leaf = app.workspace.getLeaf("tab");
-		await leaf.openFile(existingFile as TFile);
+		await leaf.openFile(existingFile);
 		new Notice(`"${noteTitle}" already exists — opened it.`);
 		return noteTitle;
 	}

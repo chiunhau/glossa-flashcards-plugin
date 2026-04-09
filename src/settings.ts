@@ -54,9 +54,9 @@ export class FlashcardSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    // ── General ───────────────────────────────────────────────────────────────
+    // ── API ───────────────────────────────────────────────────────────────────
 
-    new Setting(containerEl).setName("General").setHeading();
+    new Setting(containerEl).setName("API").setHeading();
 
     new Setting(containerEl)
       .setName("API key")
@@ -77,10 +77,8 @@ export class FlashcardSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Model")
-      .setDesc("Gemini model (e.g. gemini-2.5-flash-lite, gemini-2.5-flash).")
       .addText((text) =>
         text
-          .setPlaceholder("E.g. gemini-2.5-flash-lite")
           .setValue(this.plugin.settings.geminiModel)
           .then((t) => {
             t.inputEl.addClass("glossa-input-medium");
@@ -155,7 +153,6 @@ export class FlashcardSettingTab extends PluginSettingTab {
       .setDesc("One per line: field_key: description. The AI returns each field as structured data; descriptions guide its output.")
       .addTextArea((text) =>
         text
-          .setPlaceholder("E.g. translation: English translation")
           .setValue(this.plugin.settings.outputFields)
           .then((t) => {
             t.inputEl.addClass("glossa-setting-textarea");
@@ -186,7 +183,6 @@ export class FlashcardSettingTab extends PluginSettingTab {
       .setDesc("Output field whose value becomes the note filename.")
       .addText((text) =>
         text
-          .setPlaceholder("E.g. dictionary_form")
           .setValue(this.plugin.settings.titleField)
           .onChange(async (value) => {
             this.plugin.settings.titleField = value.trim();
@@ -199,7 +195,6 @@ export class FlashcardSettingTab extends PluginSettingTab {
       .setDesc("Note content template. Use {{fieldKey}} to insert AI output fields.")
       .addTextArea((text) =>
         text
-          .setPlaceholder("{{example_1}} ({{example_1_translation}})")
           .setValue(this.plugin.settings.noteBodyTemplate)
           .then((t) => {
             t.inputEl.addClass("glossa-setting-textarea");
@@ -224,7 +219,6 @@ export class FlashcardSettingTab extends PluginSettingTab {
       .setDesc("One per line: propertyKey: value. Use {{fieldKey}} for AI output, {{source_text}} for the original selected text. JSON arrays are supported (e.g. [\"[[Tag]]\"]).")
       .addTextArea((text) =>
         text
-          .setPlaceholder("word_class: {{word_class}}\ntranslation: {{translation}}\ngroup: Default")
           .setValue(this.plugin.settings.frontmatterConfig)
           .then((t) => {
             t.inputEl.addClass("glossa-setting-textarea");
@@ -271,7 +265,6 @@ export class FlashcardSettingTab extends PluginSettingTab {
       .setDesc("Template for the back of each practice card. Use {{title}} for the note title, or {{propertyKey}} for any note property.")
       .addTextArea((text) =>
         text
-          .setPlaceholder("{{translation}}")
           .setValue(this.plugin.settings.practiceCardBack)
           .then((t) => {
             t.inputEl.addClass("glossa-setting-textarea");
@@ -289,7 +282,6 @@ export class FlashcardSettingTab extends PluginSettingTab {
       .setDesc("Comma-separated property keys shown as filter options in the practice setup. Each becomes a checkbox group of all unique values found in your notes.")
       .addText((text) =>
         text
-          .setPlaceholder("E.g. word_class, group")
           .setValue(this.plugin.settings.practiceFilters)
           .then((t) => { t.inputEl.addClass("glossa-input-medium"); })
           .onChange(async (value) => {

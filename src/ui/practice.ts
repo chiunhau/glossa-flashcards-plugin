@@ -202,9 +202,9 @@ export class PracticeModal extends Modal {
       });
 
       const btns = contentEl.createDiv({ cls: "practice-buttons" });
-      btns.createEl("button", { text: "✗  Don't know  ←", cls: "practice-btn-dont-know" })
+      btns.createEl("button", { text: "✗  don't know  ←", cls: "practice-btn-dont-know" })
         .addEventListener("click", () => this.answer("dont_know"));
-      btns.createEl("button", { text: "✓  Know it  →", cls: "practice-btn-know" })
+      btns.createEl("button", { text: "✓  know it  →", cls: "practice-btn-know" })
         .addEventListener("click", () => this.answer("know"));
     }
   }
