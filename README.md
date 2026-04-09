@@ -1,5 +1,7 @@
 # Glossa Flashcards
 
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/chiunhau)
+
 Turn any text into living vocabulary — an Obsidian plugin that uses AI to generate rich flashcards from selected text, plus a browser extension to capture words from any webpage.
 
 ## Features
@@ -53,16 +55,18 @@ The default model is `gemini-2.5-flash-lite`. You can change it to any Gemini mo
 
 ---
 
-## Browser Extension — Manual
+## Browser Extension
 
-The extension is not yet on the Chrome Web Store and must be loaded as an unpacked extension.
+You can install the official extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/glossa-flashcards-for-obs/iadipobehkajgdochdfippdapcdokjmj).
+
+Once installed, select any text on a webpage, right-click, and choose **"Create glossa flashcard from selection"**. Obsidian must be open for the handoff to work.
+
+### Manual Installation (Developer)
 
 1. Clone or download this repository.
 2. In Chrome (or any Chromium browser), go to `chrome://extensions/`.
 3. Enable **Developer mode** (top-right toggle).
 4. Click **Load unpacked** and select the `apps/extension/` folder.
-
-Once installed, select any text on a webpage, right-click, and choose **"Create glossa flashcard from selection"**. Obsidian must be open for the handoff to work.
 
 ---
 
